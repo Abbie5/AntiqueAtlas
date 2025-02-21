@@ -1,11 +1,11 @@
-package hunternif.mc.impl.atlas.client.forge;
+package hunternif.mc.impl.atlas.client.neoforge;
 
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.Tags;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.Tags;
 
 @OnlyIn(Dist.CLIENT)
 public class TileTextureMapImpl {
@@ -18,7 +18,7 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeHasVegetation(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_SPARSE) || biomeTag.isIn(Tags.Biomes.IS_DENSE); // Not 100% sold here
+        return biomeTag.isIn(Tags.Biomes.IS_SPARSE_VEGETATION) || biomeTag.isIn(Tags.Biomes.IS_DENSE_VEGETATION); // Not 100% sold here
     }
 
     public static boolean biomeIsNether(RegistryEntry<Biome> biomeTag) {
@@ -30,7 +30,7 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeIsWater(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_WATER);
+        return biomeTag.isIn(Tags.Biomes.IS_AQUATIC);
     }
 
     public static boolean biomeIsIcy(RegistryEntry<Biome> biomeTag) {
@@ -58,7 +58,7 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeIsForest(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_DENSE) || biomeTag.isIn(Tags.Biomes.IS_SPARSE);
+        return biomeTag.isIn(Tags.Biomes.IS_DENSE_VEGETATION) || biomeTag.isIn(Tags.Biomes.IS_SPARSE_VEGETATION);
     }
 
     public static boolean biomeIsSnowy(RegistryEntry<Biome> biomeTag) {
@@ -82,11 +82,11 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeIsPeak(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_PEAK);
+        return biomeTag.isIn(Tags.Biomes.IS_MOUNTAIN_PEAK);
     }
 
     public static boolean biomeIsMountain(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_SLOPE);
+        return biomeTag.isIn(Tags.Biomes.IS_MOUNTAIN_SLOPE);
     }
 
     public static boolean biomeIsMushroom(RegistryEntry<Biome> biomeTag) {

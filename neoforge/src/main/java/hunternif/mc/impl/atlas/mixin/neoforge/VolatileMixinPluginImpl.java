@@ -1,6 +1,7 @@
-package hunternif.mc.impl.atlas.mixin.forge;
+package hunternif.mc.impl.atlas.mixin.neoforge;
 
-import net.minecraftforge.fml.loading.FMLEnvironment;
+
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class VolatileMixinPluginImpl
 {

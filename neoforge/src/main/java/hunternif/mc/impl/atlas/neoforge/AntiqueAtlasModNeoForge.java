@@ -1,22 +1,21 @@
-package hunternif.mc.impl.atlas.forge;
+package hunternif.mc.impl.atlas.neoforge;
 
 import dev.architectury.platform.Platform;
-import dev.architectury.platform.forge.EventBuses;
 import dev.architectury.utils.Env;
 import hunternif.mc.impl.atlas.AntiqueAtlasMod;
 import hunternif.mc.impl.atlas.AntiqueAtlasModClient;
-import hunternif.mc.impl.atlas.client.gui.forge.AntiqueAtlasConfigMenu;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import hunternif.mc.impl.atlas.client.gui.neoforge.AntiqueAtlasConfigMenu;
+import net.neoforged.fml.common.Mod;
 
 @Mod(AntiqueAtlasMod.ID)
-public class AntiqueAtlasModForge
+public class AntiqueAtlasModNeoForge
 {
-    public AntiqueAtlasModForge()
+    public AntiqueAtlasModNeoForge()
     {
         // Submit our event bus to let architectury register our content on the right time
-        EventBuses.registerModEventBus(AntiqueAtlasMod.ID,
-                FMLJavaModLoadingContext.get().getModEventBus());
+        // todo
+//        EventBuses.registerModEventBus(AntiqueAtlasMod.ID,
+//                FMLJavaModLoadingContext.get().getModEventBus());
 
         AntiqueAtlasMod.init();
 

@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[40,)"
+loaderVersion="[4,)"
 license="GNU GENERAL PUBLIC LICENSE"
 issueTrackerURL="https://github.com/AntiqueAtlasTeam/AntiqueAtlas/issues"
 
@@ -16,29 +16,18 @@ Antique Atlas is a book that acts like a map featuring infinite scrolling, zoom 
 '''
 
 [[dependencies.antiqueatlas]]
-modId="forge"
-mandatory=true
-versionRange="[47,)"
-ordering="NONE"
-side="BOTH"
+modId="neoforge"
+versionRange="[21.1,)"
 
 [[dependencies.antiqueatlas]]
 modId="minecraft"
-mandatory=true
 versionRange="[1.21.1,)"
-ordering="NONE"
-side="BOTH"
 
 [[dependencies.antiqueatlas]]
 modId="cloth_config"
-mandatory=true
 versionRange="[11.1.106,)"
-ordering="NONE"
-side="BOTH"
 
 [[dependencies.antiqueatlas]]
 modId = "architectury"
-mandatory = true
 versionRange = "[9.1.12,)"
 ordering = "AFTER"
-side = "BOTH"

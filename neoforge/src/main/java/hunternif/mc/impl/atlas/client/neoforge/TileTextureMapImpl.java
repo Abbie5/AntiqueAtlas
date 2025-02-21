@@ -14,7 +14,7 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeIsEnd(RegistryEntry<Biome> biomeTag) {
-        return false; // Too Specific
+        return biomeTag.isIn(Tags.Biomes.IS_END) || biomeTag.isIn(Tags.Biomes.IS_OUTER_END_ISLAND);
     }
 
     public static boolean biomeHasVegetation(RegistryEntry<Biome> biomeTag) {
@@ -22,7 +22,7 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeIsNether(RegistryEntry<Biome> biomeTag) {
-        return false; // Too Specific
+        return biomeTag.isIn(Tags.Biomes.IS_NETHER);
     }
 
     public static boolean biomeIsSwamp(RegistryEntry<Biome> biomeTag) {
@@ -34,7 +34,7 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeIsIcy(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_COLD) || biomeTag.isIn(Tags.Biomes.IS_SNOWY);
+        return biomeTag.isIn(Tags.Biomes.IS_ICY);
     }
 
     public static boolean biomeIsShore(RegistryEntry<Biome> biomeTag) {
@@ -42,23 +42,23 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeIsJungle(RegistryEntry<Biome> biomeTag) {
-        return false; // None
+        return biomeTag.isIn(Tags.Biomes.IS_JUNGLE) || biomeTag.isIn(Tags.Biomes.IS_JUNGLE_TREE);
     }
 
     public static boolean biomeIsSavanna(RegistryEntry<Biome> biomeTag) {
-        return false; // None
+        return biomeTag.isIn(Tags.Biomes.IS_SAVANNA) || biomeTag.isIn(Tags.Biomes.IS_SAVANNA_TREE);
     }
 
     public static boolean biomeIsBadlands(RegistryEntry<Biome> biomeTag) {
-        return false; // None
+        return biomeTag.isIn(Tags.Biomes.IS_BADLANDS);
     }
 
     public static boolean biomeIsPlateau(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn((Tags.Biomes.IS_PLATEAU));
+        return biomeTag.isIn(Tags.Biomes.IS_PLATEAU);
     }
 
     public static boolean biomeIsForest(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_DENSE_VEGETATION) || biomeTag.isIn(Tags.Biomes.IS_SPARSE_VEGETATION);
+        return biomeTag.isIn(Tags.Biomes.IS_FOREST);
     }
 
     public static boolean biomeIsSnowy(RegistryEntry<Biome> biomeTag) {
@@ -66,15 +66,15 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeIsPlains(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_PLAINS);
+        return biomeTag.isIn(Tags.Biomes.IS_PLAINS) || biomeTag.isIn(Tags.Biomes.IS_SNOWY_PLAINS);
     }
 
     public static boolean biomeIsDesert(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_HOT);
+        return biomeTag.isIn(Tags.Biomes.IS_DESERT);
     }
 
     public static boolean biomeIsTaiga(RegistryEntry<Biome> biomeTag) {
-        return false; // None
+        return biomeTag.isIn(Tags.Biomes.IS_TAIGA);
     }
 
     public static boolean biomeIsExtremeHills(RegistryEntry<Biome> biomeTag) {
@@ -86,7 +86,7 @@ public class TileTextureMapImpl {
     }
 
     public static boolean biomeIsMountain(RegistryEntry<Biome> biomeTag) {
-        return biomeTag.isIn(Tags.Biomes.IS_MOUNTAIN_SLOPE);
+        return biomeTag.isIn(Tags.Biomes.IS_MOUNTAIN) || biomeTag.isIn(Tags.Biomes.IS_MOUNTAIN_SLOPE);
     }
 
     public static boolean biomeIsMushroom(RegistryEntry<Biome> biomeTag) {

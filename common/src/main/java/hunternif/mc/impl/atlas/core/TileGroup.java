@@ -2,9 +2,12 @@ package hunternif.mc.impl.atlas.core;
 
 import hunternif.mc.impl.atlas.util.Log;
 import hunternif.mc.impl.atlas.util.Rect;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
 
 /**
@@ -19,6 +22,12 @@ public class TileGroup implements ITileStorage {
      * The width/height of this TileGroup
      */
     public static final int CHUNK_STEP = 16;
+    
+    public static final PacketCodec<PacketByteBuf, TileGroup> PACKET_CODEC = PacketCodec.of((t, b) -> {
+        NbtCompound nbt = new NbtCompound();
+        t.writeToNBT(nbt);
+        b.writeNbt(nbt);
+    }, b -> TileGroup.fromNBT(b.readNbt()));
 
     /**
      * The area of chunks this group covers

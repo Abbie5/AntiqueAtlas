@@ -1,7 +1,11 @@
 package hunternif.mc.impl.atlas.marker;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -106,28 +110,32 @@ public class Marker {
 	public String toString() {
 		return "#" + id + "\"" + label.getString() + "\"" + "@(" + x + ", " + z + ")";
 	}
-
-	public void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.id);
-		buf.writeText(this.label);
-		buf.writeVarInt(this.x);
-		buf.writeVarInt(this.z);
-		buf.writeBoolean(this.visibleAhead);
+	
+	public Precursor getPrecursor() {
+		return new Precursor(id, label, x, z, visibleAhead);
 	}
 
 	public static class Precursor {
+		public static final PacketCodec<ByteBuf, Precursor> PACKET_CODEC = PacketCodec.tuple(
+				PacketCodecs.VAR_INT, p -> p.id,
+				TextCodecs.PACKET_CODEC, p -> p.label,
+				PacketCodecs.VAR_INT, p -> p.x,
+				PacketCodecs.VAR_INT, p -> p.z,
+				PacketCodecs.BOOL, p -> p.visibleAhead,
+				Precursor::new
+		);
+		
 		private final int id;
 		private final Text label;
 		private final int x, z;
 		private final boolean visibleAhead;
 
-
-		public Precursor(PacketByteBuf buf) {
-			this.id = buf.readVarInt();
-			this.label = buf.readText();
-			this.x = buf.readVarInt();
-			this.z = buf.readVarInt();
-			this.visibleAhead = buf.readBoolean();
-		}
-	}
+        public Precursor(int id, Text label, int x, int z, boolean visibleAhead) {
+            this.id = id;
+            this.label = label;
+            this.x = x;
+            this.z = z;
+            this.visibleAhead = visibleAhead;
+        }
+    }
 }

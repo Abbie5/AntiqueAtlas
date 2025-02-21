@@ -45,7 +45,7 @@ public class MarkersDataHandler {
             return markersDataClientCache.computeIfAbsent(key + world.getRegistryKey(), s -> new MarkersData());
         } else {
             PersistentStateManager manager = ((ServerWorld) world).getPersistentStateManager();
-            return manager.getOrCreate(MarkersData::fromNbt, MarkersData::new, key);
+            return manager.getOrCreate(MarkersData.TYPE, key);
         }
     }
 

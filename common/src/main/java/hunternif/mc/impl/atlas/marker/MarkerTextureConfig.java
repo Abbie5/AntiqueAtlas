@@ -39,7 +39,7 @@ public class MarkerTextureConfig implements ResourceReloadListener<Map<Identifie
             Map<Identifier, MarkerType> typeMap = new HashMap<>();
 
             for (Identifier id : manager.findResources("atlas/markers", id -> id.toString().endsWith(".json")).keySet()) {
-                Identifier markerId = new Identifier(
+                Identifier markerId = Identifier.of(
                         id.getNamespace(),
                         id.getPath().replace("atlas/markers/", "").replace(".json", "")
                 );

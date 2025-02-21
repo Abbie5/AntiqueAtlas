@@ -33,7 +33,7 @@ public class AtlasItem extends Item {
     }
     
     public static int getAtlasID(ItemStack stack) {
-        return stack.getOrCreateNbt().getInt("atlasID");
+        return stack.getOrDefault(AntiqueAtlasItems.ATLAS_COMPONENT.get(), 0);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class AtlasItem extends Item {
         if (blockState.isIn(BlockTags.BANNERS)) {
             AntiqueAtlasModClient.openAtlasGUI(context.getStack());
             MapBannerMarker mapBannerMarker = MapBannerMarker.fromWorldBlock(context.getWorld(), context.getBlockPos());
-            AntiqueAtlasModClient.getAtlasGUI().openMarkerFinalizer(mapBannerMarker.getName());
+            AntiqueAtlasModClient.getAtlasGUI().openMarkerFinalizer(mapBannerMarker.name().orElse(null));
             context.getWorld().playSound(context.getPlayer(), context.getBlockPos(), SoundEvents.ITEM_BOOK_PAGE_TURN, SoundCategory.BLOCKS, 1f, 1f);
 
             return ActionResult.SUCCESS;

@@ -358,9 +358,9 @@ public class GuiComponent extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double dy) {
-        if (!iterateMouseInput((c) -> c.mouseScrolled(mx, my, dy))) {
-            return super.mouseScrolled(mx, my, dy);
+    public boolean mouseScrolled(double mx, double my, double dx, double dy) {
+        if (!iterateMouseInput((c) -> c.mouseScrolled(mx, my, dx, dy))) {
+            return super.mouseScrolled(mx, my, dx, dy);
         } else {
             return true;
         }
@@ -449,6 +449,11 @@ public class GuiComponent extends Screen {
         if (sizeIsInvalid) {
             validateSize();
         }
+    }
+
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        // no-op
     }
 
     @Override

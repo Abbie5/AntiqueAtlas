@@ -51,18 +51,18 @@ public class Textures {
             ICON_HIDE_MARKERS = icon("hide_markers.png"),
             ICON_EXPORT = icon("export.png");
 
-    public static final Identifier EXPORTED_BG = new Identifier(GUI + "exported_bg.png");
+    public static final Identifier EXPORTED_BG = Identifier.of(GUI + "exported_bg.png");
 
     // Constructor helpers:
     private static ITexture gui(String fileName, int width, int height) {
-        return new Texture(new Identifier(GUI + fileName), width, height);
+        return new Texture(Identifier.of(GUI + fileName), width, height);
     }
 
     private static ITexture scaleBar(String fileName) {
-        return new Texture(new Identifier(GUI_SCALEBAR + fileName), 20, 8);
+        return new Texture(Identifier.of(GUI_SCALEBAR + fileName), 20, 8);
     }
 
     private static ITexture icon(String fileName) {
-        return new IconTexture(new Identifier(GUI_ICONS + fileName));
+        return new IconTexture(Identifier.of(GUI_ICONS + fileName));
     }
 }

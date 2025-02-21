@@ -5,7 +5,10 @@ import hunternif.mc.impl.atlas.AntiqueAtlasMod;
 import hunternif.mc.api.AtlasAPI;
 import hunternif.mc.impl.atlas.network.packet.c2s.C2SPacket;
 import hunternif.mc.impl.atlas.util.Log;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Identifier;
 
 /**
@@ -14,35 +17,35 @@ import net.minecraft.util.Identifier;
  * @author Hunternif
  * @author Haven King
  */
-public class PutTileC2SPacket extends C2SPacket {
-	public static final Identifier ID = AntiqueAtlasMod.id("packet", "c2s", "tile", "put");
-
-	public PutTileC2SPacket(int atlasID, int x, int z, Identifier tile) {
-		this.writeInt(atlasID);
-		this.writeVarInt(x);
-		this.writeVarInt(z);
-		this.writeIdentifier(tile);
-	}
+public record PutTileC2SPacket(
+		int atlasID,
+		int x,
+		int z,
+		Identifier tile
+) implements C2SPacket {
+	public static final Id<PutTileC2SPacket> ID = new Id<>(AntiqueAtlasMod.id("packet", "c2s", "tile", "put"));
+	public static final PacketCodec<ByteBuf, PutTileC2SPacket> PACKET_CODEC = PacketCodec.tuple(
+			PacketCodecs.VAR_INT, PutTileC2SPacket::atlasID,
+			PacketCodecs.VAR_INT, PutTileC2SPacket::x,
+			PacketCodecs.VAR_INT, PutTileC2SPacket::z,
+			Identifier.PACKET_CODEC, PutTileC2SPacket::tile,
+			PutTileC2SPacket::new
+	);
 
 	@Override
-	public Identifier getId() {
+	public Id<?> getId() {
 		return ID;
 	}
 
-	public static void apply(PacketByteBuf buf, NetworkManager.PacketContext context) {
-		int atlasID = buf.readVarInt();
-		int x = buf.readVarInt();
-		int z = buf.readVarInt();
-		Identifier tile = buf.readIdentifier();
-
+	public static void apply(PutTileC2SPacket packet, NetworkManager.PacketContext context) {
 		context.queue(() -> {
-			if (AntiqueAtlasMod.CONFIG.itemNeeded && !AtlasAPI.getPlayerAtlases(context.getPlayer()).contains(atlasID)) {
+			if (AntiqueAtlasMod.CONFIG.itemNeeded && !AtlasAPI.getPlayerAtlases(context.getPlayer()).contains(packet.atlasID)) {
 				Log.warn("Player %s attempted to modify someone else's Atlas #%d",
-						context.getPlayer().getName(), atlasID);
+						context.getPlayer().getName(), packet.atlasID);
 				return;
 			}
 
-			AtlasAPI.getTileAPI().putTile(context.getPlayer().getEntityWorld(), atlasID, tile, x, z);
+			AtlasAPI.getTileAPI().putTile(context.getPlayer().getEntityWorld(), packet.atlasID, packet.tile, packet.x, packet.z);
 		});
 	}
 }

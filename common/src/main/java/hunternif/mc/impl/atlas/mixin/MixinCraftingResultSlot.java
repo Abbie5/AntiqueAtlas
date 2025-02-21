@@ -32,7 +32,7 @@ public class MixinCraftingResultSlot extends Slot {
     @Inject(at = @At("HEAD"), method = "onCrafted(Lnet/minecraft/item/ItemStack;)V")
     protected void onCrafted(ItemStack stack, final CallbackInfo info) {
         if (inventory instanceof RecipeUnlocker) {
-            RecipeCraftedCallback.EVENT.invoker().onCrafted(this.player, this.player.getWorld(), ((RecipeUnlocker) (inventory)).getLastRecipe(), stack, input);
+            RecipeCraftedCallback.EVENT.invoker().onCrafted(this.player, this.player.getWorld(), ((RecipeUnlocker) (inventory)).getLastRecipe().value(), stack, input);
         }
     }
 }

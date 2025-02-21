@@ -87,7 +87,7 @@ public class TileDetectorBase implements ITileDetector {
 
     protected static void updateOccurrencesMap(Multiset<Identifier> map, World world, Biome biome, TileHeightType type, int weight) {
         Identifier id = getBiomeIdentifier(world, biome);
-        id = new Identifier(id.getNamespace(), id.getPath() + "_" + type.getName());
+        id = Identifier.of(id.getNamespace(), id.getPath() + "_" + type.getName());
         map.add(id, weight);
     }
 

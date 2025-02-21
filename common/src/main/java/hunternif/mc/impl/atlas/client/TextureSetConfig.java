@@ -42,7 +42,7 @@ public class TextureSetConfig implements ResourceReloadListener<Collection<Textu
 
             try {
                 for (Identifier id : manager.findResources("atlas/texture_sets", id -> id.toString().endsWith(".json")).keySet()) {
-                    Identifier texture_id = new Identifier(
+                    Identifier texture_id = Identifier.of(
                             id.getNamespace(),
                             id.getPath().replace("atlas/texture_sets/", "").replace(".json", "")
                     );
@@ -67,7 +67,7 @@ public class TextureSetConfig implements ResourceReloadListener<Collection<Textu
 
                             for (Entry<String, JsonElement> entry : data.getAsJsonObject("textures").entrySet()) {
                                 for (int i = 0; i < entry.getValue().getAsInt(); i++) {
-                                    textures.add(new Identifier(entry.getKey()));
+                                    textures.add(Identifier.of(entry.getKey()));
                                 }
                             }
 
@@ -83,7 +83,7 @@ public class TextureSetConfig implements ResourceReloadListener<Collection<Textu
                                     throw new RuntimeException("The `shore` entry is missing a water entry.");
                                 }
 
-                                set = new TextureSet.TextureSetShore(texture_id, new Identifier(shore.get("water").getAsString()), textures.toArray(textureArray));
+                                set = new TextureSet.TextureSetShore(texture_id, Identifier.of(shore.get("water").getAsString()), textures.toArray(textureArray));
                             }
 
                             if (data.has("stitch")) {
@@ -92,13 +92,13 @@ public class TextureSetConfig implements ResourceReloadListener<Collection<Textu
 
                                     switch (to) {
                                         case "both":
-                                            set.stitchTo(new Identifier(entry.getKey()));
+                                            set.stitchTo(Identifier.of(entry.getKey()));
                                             break;
                                         case "horizontal":
-                                            set.stitchToHorizontal(new Identifier(entry.getKey()));
+                                            set.stitchToHorizontal(Identifier.of(entry.getKey()));
                                             break;
                                         case "vertical":
-                                            set.stitchToVertical(new Identifier(entry.getKey()));
+                                            set.stitchToVertical(Identifier.of(entry.getKey()));
                                             break;
                                         default:
                                             throw new RuntimeException("Invalid stitch value (" + to + ") for `" + entry.getKey() + "`");

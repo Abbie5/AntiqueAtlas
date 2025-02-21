@@ -2,12 +2,14 @@ package hunternif.mc.impl.atlas.core;
 
 import hunternif.mc.impl.atlas.network.packet.s2c.play.MapDataS2CPacket;
 import hunternif.mc.impl.atlas.util.Log;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
@@ -32,6 +34,12 @@ public class AtlasData extends PersistentState {
     public static final String TAG_BROWSING_X = "qBrowseX";
     public static final String TAG_BROWSING_Y = "qBrowseY";
     public static final String TAG_BROWSING_ZOOM = "qBrowseZoom";
+    
+    public static final Type<AtlasData> TYPE = new Type<>(
+            AtlasData::new,
+            AtlasData::fromNbt,
+            DataFixTypes.LEVEL
+    );
 
     /**
      * This map contains, for each dimension, a map of chunks the player
@@ -49,7 +57,7 @@ public class AtlasData extends PersistentState {
     public AtlasData() {
     }
 
-    public static AtlasData fromNbt(NbtCompound compound) {
+    public static AtlasData fromNbt(NbtCompound compound, RegistryWrapper.WrapperLookup lookup) {
         AtlasData data = new AtlasData();
         data.updateFromNbt(compound);
         return data;
@@ -66,7 +74,7 @@ public class AtlasData extends PersistentState {
         for (int d = 0; d < worldMapList.size(); d++) {
             NbtCompound worldTag = worldMapList.getCompound(d);
             RegistryKey<World> worldID;
-            worldID = RegistryKey.of(RegistryKeys.WORLD, new Identifier(worldTag.getString(TAG_WORLD_ID)));
+            worldID = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(worldTag.getString(TAG_WORLD_ID)));
             NbtList dimensionTag = (NbtList) worldTag.get(TAG_VISITED_CHUNKS);
             WorldData dimData = this.getWorldData(worldID);
             dimData.readFromNBT(dimensionTag);
@@ -78,7 +86,7 @@ public class AtlasData extends PersistentState {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public NbtCompound writeNbt(NbtCompound compound, RegistryWrapper.WrapperLookup lookup) {
         return writeToNBT(compound, true);
     }
 

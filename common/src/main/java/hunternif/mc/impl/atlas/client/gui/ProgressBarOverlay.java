@@ -48,21 +48,19 @@ class ProgressBarOverlay {
             p = 0;
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vb = tessellator.getBuffer();
+        BufferBuilder vb = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
-        vb.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        vb.vertex(x, y, 0).color(0.5f, 0.5f, 0.5f, 1);
+        vb.vertex(x, y + barHeight, 0).color(0.5f, 0.5f, 0.5f, 1);
+        vb.vertex(x + barWidth, y + barHeight, 0).color(0.5f, 0.5f, 0.5f, 1);
+        vb.vertex(x + barWidth, y, 0).color(0.5f, 0.5f, 0.5f, 1);
 
-        vb.vertex(x, y, 0).color(0.5f, 0.5f, 0.5f, 1).next();
-        vb.vertex(x, y + barHeight, 0).color(0.5f, 0.5f, 0.5f, 1).next();
-        vb.vertex(x + barWidth, y + barHeight, 0).color(0.5f, 0.5f, 0.5f, 1).next();
-        vb.vertex(x + barWidth, y, 0).color(0.5f, 0.5f, 0.5f, 1).next();
+        vb.vertex(x, y, 0).color(0.5f, 1, 0.5f, 1);
+        vb.vertex(x, y + barHeight, 0).color(0.5f, 1, 0.5f, 1);
+        vb.vertex((float) (x + barWidth * p), y + barHeight, 0).color(0.5f, 1, 0.5f, 1);
+        vb.vertex((float) (x + barWidth * p), y, 0).color(0.5f, 1, 0.5f, 1);
 
-        vb.vertex(x, y, 0).color(0.5f, 1, 0.5f, 1).next();
-        vb.vertex(x, y + barHeight, 0).color(0.5f, 1, 0.5f, 1).next();
-        vb.vertex(x + barWidth * p, y + barHeight, 0).color(0.5f, 1, 0.5f, 1).next();
-        vb.vertex(x + barWidth * p, y, 0).color(0.5f, 1, 0.5f, 1).next();
-
-        tessellator.draw();
+        tessellator.clear();
     }
 
 }

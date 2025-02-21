@@ -47,18 +47,18 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    archiveClassifier = "dev-shadow"
 }
 
 remapJar {
     injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
+    archiveClassifier = null
 }
 
 jar {
-    classifier "dev"
+    archiveClassifier = "dev"
 }
 
 sourcesJar {
@@ -89,7 +89,7 @@ publishing {
 
 unifiedPublishing {
     project {
-        gameVersions = ["1.20.1"]
+        gameVersions = ["1.21.1"]
         gameLoaders = ["fabric"]
         releaseType = "release"
 
@@ -115,7 +115,7 @@ unifiedPublishing {
             curseforge {
                 token = cfToken
                 id = rootProject.curseforge_id
-                gameVersions.addAll "Java 17"
+                gameVersions.addAll "Java 21"
             }
         }
 

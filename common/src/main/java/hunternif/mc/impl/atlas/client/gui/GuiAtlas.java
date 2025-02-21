@@ -668,27 +668,27 @@ public class GuiAtlas extends GuiComponent {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double wheelMove) {
-        double origWheelMove = wheelMove;
+    public boolean mouseScrolled(double mx, double my, double dx, double dy) {
+        double origDy = dy;
 
-        boolean handled = super.mouseScrolled(mx, my, origWheelMove);
+        boolean handled = super.mouseScrolled(mx, my, dx, origDy);
 
-        if (!handled && wheelMove != 0) {
-            wheelMove = wheelMove > 0 ? 1 : -1;
+        if (!handled && dy != 0) {
+            dy = dy > 0 ? 1 : -1;
             if (AntiqueAtlasMod.CONFIG.doReverseWheelZoom) {
-                wheelMove *= -1;
+                dy *= -1;
             }
 
             double mouseOffsetX = MinecraftClient.getInstance().getWindow().getFramebufferWidth() / screenScale / 2 - getMouseX();
             double mouseOffsetY = MinecraftClient.getInstance().getWindow().getFramebufferHeight() / screenScale / 2 - getMouseY();
-            double newScale = mapScale * Math.pow(2, wheelMove);
+            double newScale = mapScale * Math.pow(2, dy);
             double addOffsetX = 0;
             double addOffsetY = 0;
             if (Math.abs(mouseOffsetX) < MAP_WIDTH / 2f && Math.abs(mouseOffsetY) < MAP_HEIGHT / 2f) {
-                addOffsetX = mouseOffsetX * wheelMove;
-                addOffsetY = mouseOffsetY * wheelMove;
+                addOffsetX = mouseOffsetX * dy;
+                addOffsetY = mouseOffsetY * dy;
 
-                if (wheelMove > 0) {
+                if (dy > 0) {
                     addOffsetX *= mapScale / newScale;
                     addOffsetY *= mapScale / newScale;
                 }
@@ -903,8 +903,6 @@ public class GuiAtlas extends GuiComponent {
             }
         }
 
-        super.renderBackground(context);
-
         RenderSystem.setShaderColor(1, 1, 1, 1);
         // TODO fix me for 1.17
 //        RenderSystem.enableAlphaTest();
@@ -1022,7 +1020,6 @@ public class GuiAtlas extends GuiComponent {
 
         // Draw progress overlay:
         if (state.is(EXPORTING_IMAGE)) {
-            renderBackground(context);
             progressBar.draw(context, (width - 100) / 2, height / 2 - 34);
         }
     }

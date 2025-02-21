@@ -47,7 +47,7 @@ public class TileTextureConfig implements ResourceReloadListener<Map<Identifier,
 
             try {
                 for (Identifier id : manager.findResources("atlas/tiles", id -> id.toString().endsWith(".json")).keySet()) {
-                    Identifier tile_id = new Identifier(id.getNamespace(), id.getPath().replace("atlas/tiles/", "").replace(".json", ""));
+                    Identifier tile_id = Identifier.of(id.getNamespace(), id.getPath().replace("atlas/tiles/", "").replace(".json", ""));
 
                     try {
                         Resource resource = manager.getResource(id).orElseThrow(IOException::new);
@@ -56,7 +56,7 @@ public class TileTextureConfig implements ResourceReloadListener<Map<Identifier,
 
                             int version = object.getAsJsonPrimitive("version").getAsInt();
                             if (version == 1) {
-                                Identifier texture_set = new Identifier(object.get("texture_set").getAsString());
+                                Identifier texture_set = Identifier.of(object.get("texture_set").getAsString());
 
                                 map.put(tile_id, texture_set);
 
@@ -67,7 +67,7 @@ public class TileTextureConfig implements ResourceReloadListener<Map<Identifier,
                                 Identifier default_entry = TileTextureMap.DEFAULT_TEXTURE;
 
                                 try {
-                                    default_entry = new Identifier(object.getAsJsonObject("texture_sets").get("default").getAsString());
+                                    default_entry = Identifier.of(object.getAsJsonObject("texture_sets").get("default").getAsString());
                                 } catch (Exception ignored) {
                                 }
 
@@ -78,7 +78,7 @@ public class TileTextureConfig implements ResourceReloadListener<Map<Identifier,
                                     Identifier texture_set = default_entry;
 
                                     try {
-                                        texture_set = new Identifier(object.getAsJsonObject("texture_sets").get(layer.getName()).getAsString());
+                                        texture_set = Identifier.of(object.getAsJsonObject("texture_sets").get(layer.getName()).getAsString());
                                     } catch (Exception ignored) {
                                     }
 

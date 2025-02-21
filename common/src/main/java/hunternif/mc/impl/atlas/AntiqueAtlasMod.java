@@ -41,7 +41,7 @@ public class AntiqueAtlasMod {
     public static AntiqueAtlasConfig CONFIG = new AntiqueAtlasConfig();
 
     public static Identifier id(String... path) {
-        return path[0].contains(":") ? new Identifier(String.join(".", path)) : new Identifier(ID, String.join(".", path));
+        return path[0].contains(":") ? Identifier.of(String.join(".", path)) : Identifier.of(ID, String.join(".", path));
     }
 
     public static AtlasIdData getAtlasIdData(World world) {
@@ -50,7 +50,7 @@ public class AntiqueAtlasMod {
             return null;
         }
 
-        return ((ServerWorld) world).getPersistentStateManager().getOrCreate(AtlasIdData::fromNbt, AtlasIdData::new, "antiqueatlas:global_atlas_data");
+        return ((ServerWorld) world).getPersistentStateManager().getOrCreate(AtlasIdData.TYPE, "antiqueatlas:global_atlas_data");
     }
 
     public static void init() {

@@ -139,16 +139,16 @@ public abstract class AGuiScrollbar extends GuiComponent {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double wheelMove) {
+    public boolean mouseScrolled(double mx, double my, double dx, double dy) {
         if (usesWheel && getParent().isMouseOver) {
-            if (wheelMove != 0 && this.visible) {
-                wheelMove = wheelMove > 0 ? -1 : 1;
-                doSetScrollPos((int) (scrollPos + wheelMove * scrollStep));
+            if (dy != 0 && this.visible) {
+                dy = dy > 0 ? -1 : 1;
+                doSetScrollPos((int) (scrollPos + dy * scrollStep));
                 return true;
             }
         }
 
-        return super.mouseScrolled(mx, my, wheelMove);
+        return super.mouseScrolled(mx, my, dx, dy);
     }
 
     @Override

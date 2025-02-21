@@ -4,6 +4,7 @@ import hunternif.mc.impl.atlas.ClientProxy;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.world.ClientWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinMinecraftClient {
 
     @Inject(method = "joinWorld", at=@At("TAIL"))
-    void AntiqueAtlas_joinWorld(ClientWorld world, CallbackInfo info)
+    void AntiqueAtlas_joinWorld(ClientWorld world, DownloadingTerrainScreen.WorldEntryReason worldEntryReason, CallbackInfo info)
     {
         ClientProxy.assignCustomBiomeTextures(world);
     }

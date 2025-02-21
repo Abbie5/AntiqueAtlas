@@ -18,6 +18,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.SimpleDefaultedRegistry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 
@@ -59,9 +60,10 @@ public class MarkerType {
 		type.initMips();
 		if (REGISTRY.containsId(location)) {
 			int id = REGISTRY.getRawId(REGISTRY.get(location));
-			REGISTRY.set(id, RegistryKey.of(KEY, location), type, Lifecycle.stable());
+			// todo
+//			REGISTRY.set(id, RegistryKey.of(KEY, location), type, Lifecycle.stable());
 		} else {
-			REGISTRY.add(RegistryKey.of(KEY, location), type, Lifecycle.stable());
+			REGISTRY.add(RegistryKey.of(KEY, location), type, RegistryEntryInfo.DEFAULT);
 		}
 	}
 

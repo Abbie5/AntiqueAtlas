@@ -46,7 +46,7 @@ public class TextureConfig implements ResourceReloadListener<Map<Identifier, ITe
                 try {
 
                     // texture_id is the logical identifier, as it will be referenced by TextureSets
-                    Identifier texture_id = new Identifier(
+                    Identifier texture_id = Identifier.of(
                             id.getNamespace(),
                             id.getPath().replace("textures/gui/tiles/", "").replace(".png", "")
                     );

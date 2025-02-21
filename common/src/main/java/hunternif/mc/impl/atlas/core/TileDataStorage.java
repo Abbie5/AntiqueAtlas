@@ -3,10 +3,12 @@ package hunternif.mc.impl.atlas.core;
 import hunternif.mc.impl.atlas.network.packet.s2c.play.PutGlobalTileS2CPacket;
 import hunternif.mc.impl.atlas.util.Log;
 import hunternif.mc.impl.atlas.util.Streams;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
@@ -30,11 +32,17 @@ public class TileDataStorage extends PersistentState {
     private static final String TAG_TILE_LIST = "tiles";
     private static final int CHUNK_SIZE = 10000;
     private final Map<ChunkPos, Identifier> tiles = new ConcurrentHashMap<>(2, 0.75f, 2);
+    
+    public static final Type<TileDataStorage> TYPE = new Type<>(
+            TileDataStorage::new,
+            TileDataStorage::readNbt,
+            DataFixTypes.LEVEL
+    );
 
     public TileDataStorage() {
     }
     
-    public static TileDataStorage readNbt(NbtCompound compound) {
+    public static TileDataStorage readNbt(NbtCompound compound, RegistryWrapper.WrapperLookup lookup) {
         TileDataStorage data = new TileDataStorage();
 
         int version = compound.getInt(TAG_VERSION);
@@ -56,7 +64,7 @@ public class TileDataStorage extends PersistentState {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public NbtCompound writeNbt(NbtCompound compound, RegistryWrapper.WrapperLookup lookup) {
         compound.putInt(TAG_VERSION, VERSION);
 
         NbtList tileList = new NbtList();

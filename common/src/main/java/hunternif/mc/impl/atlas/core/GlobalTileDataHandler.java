@@ -21,11 +21,7 @@ public class GlobalTileDataHandler {
             new ConcurrentHashMap<>(2, 0.75f, 2);
 
     public void onWorldLoad(ServerWorld world) {
-        globalTileData.put(world.getRegistryKey(), world.getPersistentStateManager().getOrCreate(TileDataStorage::readNbt, () -> {
-            TileDataStorage data = new TileDataStorage();
-            data.markDirty();
-            return data;
-        }, DATA_KEY));
+        globalTileData.put(world.getRegistryKey(), world.getPersistentStateManager().getOrCreate(TileDataStorage.TYPE, DATA_KEY));
     }
 
     public TileDataStorage getData(World world) {

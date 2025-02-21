@@ -30,10 +30,10 @@ configurations {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    neoForge "net.neoforged:neoforge:${rootProject.forge_version}"
 
-    modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
-    modApi "me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}"
+    modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_version}"
+    modApi "me.shedaniel.cloth:cloth-config-neoforge:${rootProject.cloth_config_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
@@ -93,7 +93,7 @@ publishing {
 
 unifiedPublishing {
     project {
-        gameVersions = ["1.20.1"]
+        gameVersions = ["1.21.1"]
         gameLoaders = ["forge"]
         releaseType = "release"
 
@@ -115,7 +115,7 @@ unifiedPublishing {
             curseforge {
                 token = cfToken
                 id = rootProject.curseforge_id
-                gameVersions.addAll "Java 17"
+                gameVersions.addAll "Java 21"
             }
         }
 

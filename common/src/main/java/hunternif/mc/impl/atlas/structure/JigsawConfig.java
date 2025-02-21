@@ -65,7 +65,7 @@ public class JigsawConfig implements ResourceReloadListener<Map<Identifier, Stru
 
                     try {
                         // strip parts to get a better id
-                        Identifier piece_id = new Identifier(
+                        Identifier piece_id = Identifier.of(
                                 id.getNamespace(),
                                 id.getPath().replace("atlas/structures/", "").replace(".json", "")
                         );

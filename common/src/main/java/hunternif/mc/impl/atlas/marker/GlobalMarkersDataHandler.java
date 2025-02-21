@@ -24,11 +24,7 @@ public class GlobalMarkersDataHandler {
 
 	public void onWorldLoad(ServerWorld world) {
 		if (world.getRegistryKey() == World.OVERWORLD) {
-			data = world.getPersistentStateManager().getOrCreate(GlobalMarkersData::readNbt, () -> {
-				GlobalMarkersData data = new GlobalMarkersData();
-				data.markDirty();
-				return data;
-			}, DATA_KEY);
+			data = world.getPersistentStateManager().getOrCreate(GlobalMarkersData.TYPE, DATA_KEY);
 		}
 	}
 

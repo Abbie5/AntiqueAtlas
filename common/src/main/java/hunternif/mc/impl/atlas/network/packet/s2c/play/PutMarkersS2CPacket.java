@@ -9,16 +9,21 @@ import hunternif.mc.impl.atlas.marker.Marker;
 import hunternif.mc.impl.atlas.marker.MarkersData;
 import hunternif.mc.impl.atlas.network.packet.s2c.S2CPacket;
 import hunternif.mc.impl.atlas.registry.MarkerType;
+import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Sends markers set via API from server to client.
@@ -28,60 +33,62 @@ import java.util.List;
  * @author Hunternif
  * @author Haven King
  */
-public class PutMarkersS2CPacket extends S2CPacket {
-    public static final Identifier ID = AntiqueAtlasMod.id("packet", "s2c", "marker", "put");
+public record PutMarkersS2CPacket(
+        int atlasID,
+        RegistryKey<World> world,
+        ListMultimap<Identifier, Marker.Precursor> markersByType
+) implements S2CPacket {
+    public static final Id<PutMarkersS2CPacket> ID = new Id<>(AntiqueAtlasMod.id("packet", "s2c", "marker", "put"));
+    public static final PacketCodec<ByteBuf, PutMarkersS2CPacket> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.VAR_INT, PutMarkersS2CPacket::atlasID,
+            RegistryKey.createPacketCodec(RegistryKeys.WORLD), PutMarkersS2CPacket::world,
+            PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, Marker.Precursor.PACKET_CODEC.collect(PacketCodecs.toList()))
+                    .xmap(map -> {
+                        ListMultimap<Identifier, Marker.Precursor> multimap = ArrayListMultimap.create();
+                        for (Map.Entry<Identifier, List<Marker.Precursor>> entry : map.entrySet()) {
+                            multimap.putAll(entry.getKey(), entry.getValue());
+                        }
+                        return multimap;
+                    }, multimap -> {
+                        HashMap<Identifier, List<Marker.Precursor>> map = new HashMap<>();
+                        for (var key : multimap.keySet()) {
+                            map.put(key, multimap.get(key));
+                        }
+                        return map;
+                    }), PutMarkersS2CPacket::markersByType,
+            PutMarkersS2CPacket::new
+    );
 
     private static final int GLOBAL = -1;
 
     public PutMarkersS2CPacket(int atlasID, RegistryKey<World> world, Collection<Marker> markers) {
-        ListMultimap<Identifier, Marker> markersByType = ArrayListMultimap.create();
+        this(atlasID, world, collectMarkers(markers));
+    }
+    
+    private static ListMultimap<Identifier, Marker.Precursor> collectMarkers(Collection<Marker> markers) {
+        ListMultimap<Identifier, Marker.Precursor> markersByType = ArrayListMultimap.create();
         for (Marker marker : markers) {
-            markersByType.put(marker.getType(), marker);
+            markersByType.put(marker.getType(), marker.getPrecursor());
         }
-
-        this.writeVarInt(atlasID);
-        this.writeIdentifier(world.getValue());
-        this.writeVarInt(markersByType.keySet().size());
-
-        for (Identifier type : markersByType.keySet()) {
-            this.writeIdentifier(type);
-            List<Marker> markerList = markersByType.get(type);
-            this.writeVarInt(markerList.size());
-            for (Marker marker : markerList) {
-                marker.write(this);
-            }
-        }
+        return markersByType;
     }
 
     @Override
-    public Identifier getId() {
+    public Id<?> getId() {
         return ID;
     }
 
     @Environment(EnvType.CLIENT)
-    public static void apply(PacketByteBuf buf, NetworkManager.PacketContext context) {
-        int atlasID = buf.readVarInt();
-        RegistryKey<World> world = RegistryKey.of(RegistryKeys.WORLD, buf.readIdentifier());
-        int typesLength = buf.readVarInt();
-
-        ListMultimap<Identifier, Marker.Precursor> markersByType = ArrayListMultimap.create();
-        for (int i = 0; i < typesLength; ++i) {
-            Identifier type = buf.readIdentifier();
-            int markersLength = buf.readVarInt();
-            for (int j = 0; j < markersLength; ++j) {
-                markersByType.put(type, new Marker.Precursor(buf));
-            }
-        }
-
+    public static void apply(PutMarkersS2CPacket packet, NetworkManager.PacketContext context) {
         context.queue(() -> {
-            MarkersData markersData = atlasID == GLOBAL
+            MarkersData markersData = packet.atlasID == GLOBAL
                     ? AntiqueAtlasMod.globalMarkersData.getData()
-                    : AntiqueAtlasMod.markersData.getMarkersDataCached(atlasID, world);
+                    : AntiqueAtlasMod.markersData.getMarkersDataCached(packet.atlasID, packet.world);
 
-            for (Identifier type : markersByType.keys()) {
+            for (Identifier type : packet.markersByType.keys()) {
                 MarkerType markerType = MarkerType.REGISTRY.get(type);
-                for (Marker.Precursor precursor : markersByType.get(type)) {
-                    markersData.loadMarker(new Marker(MarkerType.REGISTRY.getId(markerType), world, precursor));
+                for (Marker.Precursor precursor : packet.markersByType.get(type)) {
+                    markersData.loadMarker(new Marker(MarkerType.REGISTRY.getId(markerType), packet.world, precursor));
                 }
             }
 

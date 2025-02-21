@@ -4,12 +4,14 @@ import hunternif.mc.api.MarkerAPI;
 import hunternif.mc.impl.atlas.AntiqueAtlasMod;
 import hunternif.mc.impl.atlas.network.packet.s2c.play.PutMarkersS2CPacket;
 import hunternif.mc.impl.atlas.util.Log;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -42,6 +44,12 @@ public class MarkersData extends PersistentState {
 	private static final String TAG_MARKER_X = "x";
 	private static final String TAG_MARKER_Y = "y";
 	private static final String TAG_MARKER_VISIBLE_AHEAD = "visAh";
+	
+	public static final Type<MarkersData> TYPE = new Type<>(
+			MarkersData::new,
+			MarkersData::fromNbt,
+			DataFixTypes.LEVEL
+	);
 
 	/** Markers are stored in lists within square areas this many MC chunks
 	 * across. */
@@ -73,13 +81,13 @@ public class MarkersData extends PersistentState {
 	public MarkersData() {
 	}
 
-	public static MarkersData fromNbt(NbtCompound compound) {
+	public static MarkersData fromNbt(NbtCompound compound, RegistryWrapper.WrapperLookup lookup) {
 		MarkersData data = new MarkersData();
-		doReadNbt(compound, data);
+		doReadNbt(compound, data, lookup);
 		return data;
 	}
 
-	protected static void doReadNbt(NbtCompound compound, MarkersData data) {
+	protected static void doReadNbt(NbtCompound compound, MarkersData data, RegistryWrapper.WrapperLookup lookup) {
 
 		int version = compound.getInt(TAG_VERSION);
 		if (version < VERSION) {
@@ -90,7 +98,7 @@ public class MarkersData extends PersistentState {
 		NbtList dimensionMapList = compound.getList(TAG_WORLD_MAP_LIST, NbtElement.COMPOUND_TYPE);
 		for (int d = 0; d < dimensionMapList.size(); d++) {
 			NbtCompound tag = dimensionMapList.getCompound(d);
-			RegistryKey<World> world = RegistryKey.of(RegistryKeys.WORLD, new Identifier(tag.getString(TAG_WORLD_ID)));
+			RegistryKey<World> world = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(tag.getString(TAG_WORLD_ID)));
 
 			NbtList tagList = tag.getList(TAG_MARKERS, NbtElement.COMPOUND_TYPE);
 			for (int i = 0; i < tagList.size(); i++) {
@@ -109,8 +117,8 @@ public class MarkersData extends PersistentState {
 
 				Marker marker = new Marker(
 						id,
-						new Identifier(markerTag.getString(TAG_MARKER_TYPE)),
-						Text.Serializer.fromJson(markerTag.getString(TAG_MARKER_LABEL)),
+						Identifier.of(markerTag.getString(TAG_MARKER_TYPE)),
+						Text.Serialization.fromJson(markerTag.getString(TAG_MARKER_LABEL), lookup),
 						world,
 						markerTag.getInt(TAG_MARKER_X),
 						markerTag.getInt(TAG_MARKER_Y),
@@ -121,7 +129,7 @@ public class MarkersData extends PersistentState {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound compound) {
+	public NbtCompound writeNbt(NbtCompound compound, RegistryWrapper.WrapperLookup lookup) {
 		Log.info("Saving local markers data to NBT");
 		compound.putInt(TAG_VERSION, VERSION);
 		NbtList dimensionMapList = new NbtList();
@@ -134,7 +142,7 @@ public class MarkersData extends PersistentState {
 				NbtCompound markerTag = new NbtCompound();
 				markerTag.putInt(TAG_MARKER_ID, marker.getId());
 				markerTag.putString(TAG_MARKER_TYPE, marker.getType().toString());
-				markerTag.putString(TAG_MARKER_LABEL, Text.Serializer.toJson(marker.getLabel()));
+				markerTag.putString(TAG_MARKER_LABEL, Text.Serialization.toJsonString(marker.getLabel(), lookup));
 				markerTag.putInt(TAG_MARKER_X, marker.getX());
 				markerTag.putInt(TAG_MARKER_Y, marker.getZ());
 				markerTag.putBoolean(TAG_MARKER_VISIBLE_AHEAD, marker.isVisibleAhead());

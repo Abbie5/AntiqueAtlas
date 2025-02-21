@@ -12,8 +12,10 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -28,11 +30,9 @@ import java.util.List;
  */
 public class RecipeAtlasCombining implements CraftingRecipe {
     public static final RecipeSerializer<RecipeAtlasCombining> SERIALIZER = new SpecialRecipeSerializer<>(RecipeAtlasCombining::new);
-    private final Identifier id;
     private final CraftingRecipeCategory category;
 
-    public RecipeAtlasCombining(Identifier id, CraftingRecipeCategory category) {
-        this.id = id;
+    public RecipeAtlasCombining(CraftingRecipeCategory category) {
         this.category = category;
     }
 
@@ -42,14 +42,14 @@ public class RecipeAtlasCombining implements CraftingRecipe {
     }
 
     @Override
-    public boolean matches(RecipeInputInventory inv, World world) {
+    public boolean matches(CraftingRecipeInput inv, World world) {
         return matches(inv);
     }
 
-    private boolean matches(RecipeInputInventory inv) {
+    private boolean matches(CraftingRecipeInput inv) {
         int atlasesFound = 0;
-        for (int i = 0; i < inv.size(); ++i) {
-            ItemStack stack = inv.getStack(i);
+        for (int i = 0; i < inv.getSize(); ++i) {
+            ItemStack stack = inv.getStackInSlot(i);
             if (!stack.isEmpty()) {
                 if (stack.getItem() == AntiqueAtlasItems.ATLAS.get()) {
                     atlasesFound++;
@@ -60,11 +60,11 @@ public class RecipeAtlasCombining implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(RecipeInputInventory inv, DynamicRegistryManager registryManager) {
+    public ItemStack craft(CraftingRecipeInput inv, RegistryWrapper.WrapperLookup lookup) {
         ItemStack firstAtlas = ItemStack.EMPTY;
         List<Integer> atlasIds = new ArrayList<>(9);
-        for (int i = 0; i < inv.size(); ++i) {
-            ItemStack stack = inv.getStack(i);
+        for (int i = 0; i < inv.getSize(); ++i) {
+            ItemStack stack = inv.getStackInSlot(i);
             if (!stack.isEmpty()) {
                 if (stack.getItem() instanceof AtlasItem) {
                     if (firstAtlas.isEmpty()) {
@@ -84,13 +84,8 @@ public class RecipeAtlasCombining implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack getOutput(DynamicRegistryManager registryManager) {
+    public ItemStack getResult(RegistryWrapper.WrapperLookup lookup) {
         return new ItemStack(AntiqueAtlasItems.ATLAS.get());
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
     }
 
     @Override
@@ -139,7 +134,7 @@ public class RecipeAtlasCombining implements CraftingRecipe {
 
         // Set atlas ID last, because otherwise we wouldn't be able copy the
         // data from the atlas which was used as a placeholder for the result.
-        result.getOrCreateNbt().putInt("atlasID", atlasID);
+        result.set(AntiqueAtlasItems.ATLAS_COMPONENT.get(), atlasID);
         return result;
     }
 }

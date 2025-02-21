@@ -33,7 +33,7 @@ public class AtlasAPI {
     }
 
     public static Item getAtlasItem() {
-        return Registries.ITEM.get(new Identifier("antiqueatlas:antique_atlas"));
+        return Registries.ITEM.get(Identifier.of("antiqueatlas:antique_atlas"));
     }
 
     /**

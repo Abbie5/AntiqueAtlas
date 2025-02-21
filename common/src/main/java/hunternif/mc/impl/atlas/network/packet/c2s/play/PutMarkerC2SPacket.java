@@ -4,8 +4,12 @@ import dev.architectury.networking.NetworkManager;
 import hunternif.mc.impl.atlas.AntiqueAtlasMod;
 import hunternif.mc.api.AtlasAPI;
 import hunternif.mc.impl.atlas.network.packet.c2s.C2SPacket;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 
 /**
@@ -14,40 +18,40 @@ import net.minecraft.util.Identifier;
  * @author Hunternif
  * @author Haven King
  */
-public class PutMarkerC2SPacket extends C2SPacket {
-	public static final Identifier ID = AntiqueAtlasMod.id("packet", "c2s", "marker", "put");
-
-	public PutMarkerC2SPacket(int atlasID, Identifier markerType, int x, int z, boolean visibleBeforeDiscovery, Text label) {
-		this.writeVarInt(atlasID);
-		this.writeIdentifier(markerType);
-		this.writeVarInt(x);
-		this.writeVarInt(z);
-		this.writeBoolean(visibleBeforeDiscovery);
-		this.writeText(label);
-	}
+public record PutMarkerC2SPacket(
+		int atlasID, 
+		Identifier markerType,
+		int x,
+		int z,
+		boolean visibleBeforeDiscovery, 
+		Text label
+) implements C2SPacket {
+	public static final Id<PutMarkerC2SPacket> ID = new Id<>(AntiqueAtlasMod.id("packet", "c2s", "marker", "put"));
+	public static final PacketCodec<ByteBuf, PutMarkerC2SPacket> PACKET_CODEC = PacketCodec.tuple(
+			PacketCodecs.VAR_INT, PutMarkerC2SPacket::atlasID,
+			Identifier.PACKET_CODEC, PutMarkerC2SPacket::markerType,
+			PacketCodecs.VAR_INT, PutMarkerC2SPacket::x,
+			PacketCodecs.VAR_INT, PutMarkerC2SPacket::z,
+			PacketCodecs.BOOL, PutMarkerC2SPacket::visibleBeforeDiscovery,
+			TextCodecs.PACKET_CODEC, PutMarkerC2SPacket::label,
+			PutMarkerC2SPacket::new
+	);
 
 	@Override
-	public Identifier getId() {
+	public Id<?> getId() {
 		return ID;
 	}
 
-	public static void apply(PacketByteBuf buf, NetworkManager.PacketContext context) {
-		int atlasID = buf.readVarInt();
-		Identifier markerType = buf.readIdentifier();
-		int x = buf.readVarInt();
-		int z = buf.readVarInt();
-		boolean visibleBeforeDiscovery = buf.readBoolean();
-		Text label = buf.readText();
-
+	public static void apply(PutMarkerC2SPacket packet, NetworkManager.PacketContext context) {
 		context.queue(() -> {
-			if (!AtlasAPI.getPlayerAtlases(context.getPlayer()).contains(atlasID)) {
+			if (!AtlasAPI.getPlayerAtlases(context.getPlayer()).contains(packet.atlasID)) {
 				AntiqueAtlasMod.LOG.warn(
 								"Player {} attempted to put marker into someone else's Atlas #{}}",
-						context.getPlayer().getName(), atlasID);
+						context.getPlayer().getName(), packet.atlasID);
 				return;
 			}
 
-			AtlasAPI.getMarkerAPI().putMarker(context.getPlayer().getEntityWorld(), visibleBeforeDiscovery, atlasID, markerType, label, x,z);
+			AtlasAPI.getMarkerAPI().putMarker(context.getPlayer().getEntityWorld(), packet.visibleBeforeDiscovery, packet.atlasID, packet.markerType, packet.label, packet.x, packet.z);
 		});
 	}
 }

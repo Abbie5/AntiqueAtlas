@@ -6,10 +6,13 @@ import hunternif.mc.impl.atlas.core.AtlasData;
 import hunternif.mc.impl.atlas.core.TileGroup;
 import hunternif.mc.impl.atlas.core.WorldData;
 import hunternif.mc.impl.atlas.network.packet.s2c.S2CPacket;
+import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
@@ -25,45 +28,31 @@ import java.util.List;
  * @author Hunternif
  * @author Haven King
  */
-public class TileGroupsS2CPacket extends S2CPacket {
+public record TileGroupsS2CPacket(
+        int atlasID, 
+        RegistryKey<World> world, 
+        List<TileGroup> tileGroups
+) implements S2CPacket {
     public static final int TILE_GROUPS_PER_PACKET = 100;
-    public static final Identifier ID = AntiqueAtlasMod.id("packet", "s2c", "tile", "groups");
-
-    public TileGroupsS2CPacket(int atlasID, RegistryKey<World> world, List<TileGroup> tileGroups) {
-        this.writeVarInt(atlasID);
-        this.writeIdentifier(world.getValue());
-        this.writeVarInt(tileGroups.size());
-
-        for (TileGroup tileGroup : tileGroups) {
-            this.writeNbt(tileGroup.writeToNBT(new NbtCompound()));
-        }
-    }
+    public static final Id<TileGroupsS2CPacket> ID = new Id<>(AntiqueAtlasMod.id("packet", "s2c", "tile", "groups"));
+    public static final PacketCodec<PacketByteBuf, TileGroupsS2CPacket> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.VAR_INT, TileGroupsS2CPacket::atlasID,
+            RegistryKey.createPacketCodec(RegistryKeys.WORLD), TileGroupsS2CPacket::world,
+            TileGroup.PACKET_CODEC.collect(PacketCodecs.toList()), TileGroupsS2CPacket::tileGroups,
+            TileGroupsS2CPacket::new
+    );
 
     @Override
-    public Identifier getId() {
+    public Id<?> getId() {
         return ID;
     }
 
     @Environment(EnvType.CLIENT)
-    public static void apply(PacketByteBuf buf, NetworkManager.PacketContext context) {
-        int atlasID = buf.readVarInt();
-        RegistryKey<World> world = RegistryKey.of(RegistryKeys.WORLD, buf.readIdentifier());
-        int length = buf.readVarInt();
-        List<TileGroup> tileGroups = new ArrayList<>(length);
-
-        for (int i = 0; i < length; ++i) {
-            NbtCompound tag = buf.readNbt();
-
-            if (tag != null) {
-                tileGroups.add(TileGroup.fromNBT(tag));
-            }
-        }
-
-
+    public static void apply(TileGroupsS2CPacket packet, NetworkManager.PacketContext context) {
         context.queue(() -> {
-            AtlasData atlasData = AntiqueAtlasMod.tileData.getData(atlasID, context.getPlayer().getEntityWorld());
-            WorldData worldData = atlasData.getWorldData(world);
-            for (TileGroup t : tileGroups) {
+            AtlasData atlasData = AntiqueAtlasMod.tileData.getData(packet.atlasID, context.getPlayer().getEntityWorld());
+            WorldData worldData = atlasData.getWorldData(packet.world);
+            for (TileGroup t : packet.tileGroups) {
                 worldData.putTileGroup(t);
             }
         });
